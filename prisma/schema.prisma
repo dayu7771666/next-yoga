@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ProductCategory {
+  apparel
+  accessories
+}
+
+enum InquiryStatus {
+  new
+  contacted
+  closed
+}
+
+model Product {
+  id            String           @id @default(cuid())
+  title         String
+  slug          String           @unique
+  description   String
+  category      ProductCategory
+  images        String           @default("[]")
+  features      String           @default("[]")
+  materials     String?
+  sizes         String?
+  minOrder      String           @default("1 piece")
+  priceRange    String?
+  leadTime      String           @default("7-15 days")
+  seoTitle      String?
+  seoDescription String?
+  published     Boolean          @default(false)
+  inquiries     Inquiry[]
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+}
+
+model BlogPost {
+  id            String           @id @default(cuid())
+  title         String
+  slug          String           @unique
+  excerpt       String?
+  content       String
+  coverImage    String?
+  author        String           @default("Admin")
+  tags          String           @default("[]")
+  published     Boolean          @default(false)
+  seoTitle      String?
+  seoDescription String?
+  publishedAt   DateTime?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+}
+
+model Inquiry {
+  id            String           @id @default(cuid())
+  name          String
+  phone         String
+  message       String
+  status        InquiryStatus    @default(new)
+  productId     String?
+  product       Product?         @relation(fields: [productId], references: [id])
+  createdAt     DateTime         @default(now())
+}
+
+model AdminUser {
+  id           String           @id @default(cuid())
+  username     String           @unique
+  passwordHash String
+  createdAt    DateTime         @default(now())
+}
